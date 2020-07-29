@@ -5,8 +5,8 @@ import {
     StyleSheet,
     FlatList,
     Image,
-    Dimensions
 } from 'react-native';
+import PostCard from '../assets/components/PostCard';
 
 const DATA = [
     {
@@ -25,41 +25,17 @@ const DATA = [
 
 const HomeScreen = () => {
     const renderItem = ({ item }) => (
-        <Text style={styles.textStyle}>{item.title}</Text>
+        <PostCard />
     );
     return (
         <View style={styles.container}>
-            <View style={{flex: 1, alignItems: "center", justifyContent: 'center', width: '100%', height: '100%', paddingHorizontal: 16, paddingTop: 16}}>
-            <View style={styles.card}>
-                <Image
-                    style={styles.Image}
-                    source={require('../assets/images/test.jpg')}
-                />
-                <View style={styles.infoContain}>
-                    <View style={styles.subredditContain}>
-                        <Text>r/blahblah</Text>
-                        <Text>imgur.com</Text>
-                    </View>
-                    <Text>Strange man opens a lot of boxes - Bad Unboxing Fan Mail</Text>
-                    <View style={styles.bottomInfoContain}>
-                        <View>
-                            <Text>u/jackson</Text>
-                            <Text>1 hour ago</Text>
-                        </View>
-                        <View>
-                            <Text>28.3k points</Text>
-                            <Text>1418 comments</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
             <FlatList
                 contentContainerStyle={styles.FlatList}
+                decelerationRate={0.998}
                 data={DATA}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
             />
-        </View>
         </View>
     );
 }
@@ -72,31 +48,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingHorizontal: 8,
     },
-    Image: {
-        flex: 1,
-        maxHeight: 200,
-        maxWidth: '100%'
-    },
-    card: {
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 10,
-        paddingBottom: 16
-    },
-    subredditContain: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-        marginTop: 8
-    },
-    bottomInfoContain: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8
-    },
-    infoContain: {
-        paddingHorizontal: 16
+    FlatList: {
+        marginTop: 16
     }
 });
 
