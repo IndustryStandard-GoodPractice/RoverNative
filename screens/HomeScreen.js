@@ -9,6 +9,10 @@ import {
     Image,
 } from 'react-native';
 
+const getPosts = () => {
+    return DATA;
+}
+
 const DATA = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -80,7 +84,7 @@ const HomeScreen = () => {
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
                 showsVerticalScrollIndicator={false}
-                data={DATA}
+                data={getPosts()}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
             />
