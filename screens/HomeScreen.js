@@ -32,6 +32,7 @@ const HomeScreen = () => {
             <FlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
+                showsVerticalScrollIndicator={false}
                 data={DATA}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
