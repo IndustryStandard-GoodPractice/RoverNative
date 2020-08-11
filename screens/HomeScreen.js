@@ -1,12 +1,11 @@
 import * as React from 'react';
+import PostCard from '../assets/components/PostCard';
 import COLORS from '../global-styles/COLORS';
-import FastImage from 'react-native-fast-image';
+import TouchableScale from 'react-native-touchable-scale';
 import {
     View,
-    Text,
     StyleSheet,
     FlatList,
-    Image,
 } from 'react-native';
 
 const getPosts = () => {
@@ -16,7 +15,7 @@ const getPosts = () => {
 const DATA = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'Strange man opens a lot of boxes - Bad Unboxing Fan Mail',
+      title: 'First',
       subreddit: 'r/funny',
       source: 'imgur.com',
       username: 'u/jackson',
@@ -49,34 +48,18 @@ const DATA = [
     },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <FastImage
-                style={styles.Image}
-                source={{
-                    uri: item.image
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-            />
-            <View style={styles.infoContain}>
-                <View style={styles.subredditContain}>
-                    <Text style={styles.subredditText}>{item.subreddit}</Text>
-                    <Text style={styles.infoText}>{item.source}</Text>
-                </View>
-                    <Text style={styles.titleText}>{item.title}</Text>
-                <View style={styles.bottomInfoContain}>
-                    <View>
-                        <Text style={styles.infoText}>{item.username}</Text>
-                        <Text style={styles.infoText}>{item.time}</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.infoText}>{item.karma}</Text>
-                        <Text style={styles.infoText}>{item.comments}</Text>
-                    </View>
-                </View>
-            </View>
-        </View>
+        <TouchableScale
+            tension={300}
+            friction={20}
+            activeScale={.95}
+            onPress={() => navigation.navigate('PostScreen', {
+                item: item,
+            })}
+        >
+            <PostCard item={item} cStyle={styles}/>
+        </TouchableScale>
     );
     return (
         <View style={styles.container}>
@@ -105,43 +88,21 @@ const styles = StyleSheet.create({
     FlatList: {
         marginTop: 16
     },
-    Image: {
-        height: 180,
-        width: '100%',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16
-    },
     card: {
         flex: 1,
+        minWidth: '100%',
         borderWidth: 1,
         borderColor: COLORS.gray01,
         borderRadius: 16,
         paddingBottom: 20,
         marginBottom: 16
     },
-    subredditContain: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-        marginTop: 16
+    Image: {
+        height: 180,
+        width: '100%',
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16
     },
-    bottomInfoContain: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-    infoContain: {
-        paddingHorizontal: 16
-    },
-    infoText: {
-        color: COLORS.gray02
-    },
-    titleText: {
-        fontSize: 16
-    },
-    subredditText: {
-        color: COLORS.secondary01
-    }
 });
 
 export default HomeScreen;
