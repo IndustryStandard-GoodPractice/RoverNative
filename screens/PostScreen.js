@@ -19,7 +19,23 @@ const commentData = [
         username: 'u/crompton',
         time: '43 minutes ago',
         karma: '1854 points',
-        commentText: 'Greenwood is the one that can get easy goals. The number of amazing chances he got against cardiff and in preseason are not by luck. He knows exactly where and when to be in the final third.'
+        commentText: 'Greenwood is the one that can get easy goals. The number of amazing chances he got against cardiff and in preseason are not by luck. He knows exactly where and when to be in the final third.',
+        subComment:
+            {
+                id: 'bd7acbea-c1b1-46c2-aed5-3adgdabgfbgfda',
+                username: 'u/crompton',
+                time: '43 minutes ago',
+                karma: '1854 points',
+                commentText: 'test sub comment',
+                subComment:
+                {
+                    id: 'bd7acbea-c1b1-46c2-aed5-3adgdabgfbgfda',
+                    username: 'u/crompton',
+                    time: '43 minutes ago',
+                    karma: '1854 points',
+                    commentText: 'test sub comment'
+                }
+            }
     },
     {
         id: 'bd7acbea-c1b1-46c2-aed5-3ad53vDvSDvcsd',
