@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.025)',
         borderRadius: 8,
         marginBottom: 12,
-        marginTop: 12
     },
     commentInfo: {
         flexDirection: "row",

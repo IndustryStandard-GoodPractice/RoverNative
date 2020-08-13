@@ -7,6 +7,7 @@ import {
     View,
     StyleSheet,
     FlatList,
+    StatusBar
 } from 'react-native';
 
 const getComments = () => {
@@ -70,13 +71,14 @@ const PostScreen = ({ route, navigation }) => {
     );
     return (
         <View style={styles.container}>
-            <PostCard item={item} cStyle={styles}/>
+            <StatusBar translucent animated backgroundColor="transparent" barStyle='light-content'/>
             <FlatList
                 decelerationRate={0.998}
                 showsVerticalScrollIndicator={false}
                 data={getComments()}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
+                ListHeaderComponent={<PostCard item={item} cStyle={styles} navigation={navigation}/>}
             />
         </View>
     );

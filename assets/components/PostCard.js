@@ -5,18 +5,25 @@ import {
     View,
     Text,
     StyleSheet,
+    TouchableOpacity
 } from 'react-native';
 
-const PostCard = ({item, cStyle}) => {
+const PostCard = ({item, cStyle, navigation}) => {
     return (
         <View style={cStyle.card}>
-            <FastImage
-                style={cStyle.Image}
-                source={{
-                    uri: item.image
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-            />
+            <TouchableOpacity
+                onPress={() => navigation.navigate('ImageScreen', {
+                    item: item,
+                })}
+            >
+                <FastImage
+                    style={cStyle.Image}
+                    source={{
+                        uri: item.image
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+            </TouchableOpacity>
             <View style={styles.infoContain}>
                 <View style={styles.subredditContain}>
                     <Text style={styles.subredditText}>{item.subreddit}</Text>

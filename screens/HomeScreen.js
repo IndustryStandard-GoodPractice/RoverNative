@@ -6,6 +6,7 @@ import {
     View,
     StyleSheet,
     FlatList,
+    StatusBar
 } from 'react-native';
 
 const getPosts = () => {
@@ -58,11 +59,12 @@ const HomeScreen = ({ navigation }) => {
                 item: item,
             })}
         >
-            <PostCard item={item} cStyle={styles}/>
+            <PostCard item={item} cStyle={styles} navigation={navigation}/>
         </TouchableScale>
     );
     return (
         <View style={styles.container}>
+            <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content'/>
             <FlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
@@ -86,7 +88,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
     },
     FlatList: {
-        marginTop: 16
+        marginTop: 30,
+        marginBottom: 30
     },
     card: {
         flex: 1,
