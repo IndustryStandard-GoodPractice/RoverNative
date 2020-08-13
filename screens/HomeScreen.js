@@ -2,11 +2,14 @@ import * as React from 'react';
 import PostCard from '../assets/components/PostCard';
 import COLORS from '../global-styles/COLORS';
 import TouchableScale from 'react-native-touchable-scale';
+import Logo from '../assets/images/logo.svg';
+import MoreButton from '../assets/images/moreButton.svg';
 import {
     View,
     StyleSheet,
     FlatList,
-    StatusBar
+    StatusBar,
+    Text
 } from 'react-native';
 
 const getPosts = () => {
@@ -65,6 +68,14 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content'/>
+            <View style={styles.header}>
+                <View style={styles.headerRow}>
+                    <Logo width={40} height={40}/>
+                    <MoreButton width={40} height={40}/>
+                </View>
+                <Text style={styles.headerTopText}>There were about</Text>
+                <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
+            </View>
             <FlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
@@ -78,6 +89,26 @@ const HomeScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    header: {
+        width: '100%',
+        paddingTop: 40,
+        paddingBottom: 20,
+        paddingHorizontal: 16,
+        justifyContent: 'center',
+        zIndex: 2,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 12
+    },
+    headerTopText: {
+        fontSize: 20,
+        fontWeight: '300'
+    },
+    headerBottomText: {
+        fontSize: 25
+    },
     textStyle: {
         fontSize: 14,
     },
@@ -85,11 +116,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 8,
     },
     FlatList: {
-        marginTop: 30,
-        marginBottom: 30
+        paddingBottom: 30,
+        marginHorizontal: 8,
     },
     card: {
         flex: 1,
@@ -98,7 +128,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.gray01,
         borderRadius: 16,
         paddingBottom: 20,
-        marginBottom: 16
+        marginBottom: 16,
     },
     Image: {
         height: 180,
