@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        height: Dimensions.get('screen').height,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'white'
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         paddingHorizontal: 8,
         paddingTop: headerHeight * 2 + 8,
-        overflow: 'visible'
+        overflow: 'visible',
     },
     card: {
         flexGrow: 1,
