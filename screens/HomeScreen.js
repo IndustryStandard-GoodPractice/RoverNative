@@ -58,7 +58,7 @@ const DATA = [
 const headerHeight = 80;
 const iconSize = 35;
 const clampHeight = 180;
-const cardWidth = Dimensions.get('screen').width - 20;
+const cardWidth = Dimensions.get('screen').width - 28;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -72,6 +72,10 @@ const HomeScreen = ({ navigation }) => {
     const opacityY = Animated.interpolate(scrollY, {
         inputRange: [0, 60],
         outputRange: [1, 0]
+    })
+    const textY = Animated.interpolate(scrollY, {
+        inputRange: [0, headerHeight],
+        outputRange: [0, -headerHeight + 50]
     })
     const shadowOpacity = 0.07;
     const renderItem = ({ item }) => (
@@ -98,7 +102,7 @@ const HomeScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Animated.View>
-            <Animated.View style={[styles.textContainer, { opacity: opacityY }]}>
+            <Animated.View style={[styles.textContainer, { opacity: opacityY }, { transform: [{ translateY: textY }] }]}>
                 <Text style={styles.headerTopText}>There have been about</Text>
                 <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
             </Animated.View>
@@ -172,15 +176,15 @@ const styles = StyleSheet.create({
         width: cardWidth,
         borderWidth: 0,
         borderColor: COLORS.gray01,
-        borderRadius: 10,
+        borderRadius: 16,
         paddingBottom: 20,
         backgroundColor: 'white'
     },
     Image: {
         height: 240,
         width: '100%',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16
     },
     textContainer: {
         position: 'absolute',
