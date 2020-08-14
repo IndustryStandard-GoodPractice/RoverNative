@@ -2,7 +2,7 @@ import * as React from 'react';
 import PostCard from '../assets/components/PostCard';
 import CommentComponent from '../assets/components/CommentComponent';
 import COLORS from '../global-styles/COLORS';
-import TouchableScale from 'react-native-touchable-scale';
+import { Transition, Transitioning } from 'react-native-reanimated';
 import {
     View,
     StyleSheet,
@@ -62,16 +62,7 @@ const PostScreen = ({ route, navigation }) => {
     const shadowOpacity = 0.01;
 
     const renderItem = ({ item }) => (
-        <TouchableScale
-            tension={300}
-            friction={20}
-            activeScale={.95}
-            onPress={() => navigation.navigate('PostScreen', {
-                item: item,
-            })}
-        >
-            <CommentComponent item={item} />
-        </TouchableScale>
+        <CommentComponent item={item} />
     );
     return (
         <View style={styles.container}>
