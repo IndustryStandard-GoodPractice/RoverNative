@@ -4,7 +4,7 @@ import COLORS from '../global-styles/COLORS';
 import TouchableScale from 'react-native-touchable-scale';
 import Logo from '../assets/images/logo.svg';
 import MoreButton from '../assets/images/moreButton.svg';
-import Animated from 'react-native-reanimated';
+import Animated, { Extrapolate } from 'react-native-reanimated';
 import {
     View,
     StyleSheet,
@@ -56,23 +56,17 @@ const DATA = [
 
 const headerHeight = 80;
 const iconSize = 35;
-let headerY = 0;
+const clampHeight = 180;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const HomeScreen = ({ navigation }) => {
     const scrollY = new Animated.Value(0);
-    const diffClampScrollY = Animated.diffClamp(scrollY, 0, headerHeight)
-    const test = () => {
-        if (scrollY > 80) {
-            return Animated.interpolate(diffClampScrollY, {
-                inputRange: [0, headerHeight],
-                outputRange: [0, -headerHeight]
-            })
-        } else {
-            return 0;
-        }
-    }
+    const diffClampScrollY = Animated.diffClamp(scrollY, 0, clampHeight)
+    const headerY = Animated.interpolate(diffClampScrollY, {
+        inputRange: [0, headerHeight, clampHeight],
+        outputRange: [0, 0, -headerHeight],
+    })
     const opacityY = Animated.interpolate(scrollY, {
         inputRange: [0, 60],
         outputRange: [1, 0]
@@ -119,7 +113,6 @@ const HomeScreen = ({ navigation }) => {
                             onScroll={Animated.event(
                                 [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                                 { useNativeDriver: true },
-                                headerY = test(),
                             )}
                         />
                     );
