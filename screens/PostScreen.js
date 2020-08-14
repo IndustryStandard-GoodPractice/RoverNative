@@ -7,7 +7,8 @@ import {
     View,
     StyleSheet,
     FlatList,
-    StatusBar
+    StatusBar,
+    Dimensions
 } from 'react-native';
 
 const getComments = () => {
@@ -22,21 +23,21 @@ const commentData = [
         karma: '1854 points',
         commentText: 'Greenwood is the one that can get easy goals. The number of amazing chances he got against cardiff and in preseason are not by luck. He knows exactly where and when to be in the final third.',
         subComment:
+        {
+            id: 'bd7acbea-c1b1-46c2-aed5-3adgdabgfbgfda',
+            username: 'u/crompton',
+            time: '43 minutes ago',
+            karma: '1854 points',
+            commentText: 'test sub comment',
+            subComment:
             {
                 id: 'bd7acbea-c1b1-46c2-aed5-3adgdabgfbgfda',
                 username: 'u/crompton',
                 time: '43 minutes ago',
                 karma: '1854 points',
-                commentText: 'test sub comment',
-                subComment:
-                {
-                    id: 'bd7acbea-c1b1-46c2-aed5-3adgdabgfbgfda',
-                    username: 'u/crompton',
-                    time: '43 minutes ago',
-                    karma: '1854 points',
-                    commentText: 'test sub comment'
-                }
+                commentText: 'test sub comment'
             }
+        }
     },
     {
         id: 'bd7acbea-c1b1-46c2-aed5-3ad53vDvSDvcsd',
@@ -54,8 +55,11 @@ const commentData = [
     },
 ];
 
+const cardWidth = Dimensions.get('screen').width;
+
 const PostScreen = ({ route, navigation }) => {
     const { item } = route.params;
+    const shadowOpacity = 0.01;
 
     const renderItem = ({ item }) => (
         <TouchableScale
@@ -66,19 +70,20 @@ const PostScreen = ({ route, navigation }) => {
                 item: item,
             })}
         >
-            <CommentComponent item={item}/>
+            <CommentComponent item={item} />
         </TouchableScale>
     );
     return (
         <View style={styles.container}>
-            <StatusBar translucent animated backgroundColor="transparent" barStyle='light-content'/>
+            <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
             <FlatList
+                contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
                 showsVerticalScrollIndicator={false}
                 data={getComments()}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
-                ListHeaderComponent={<PostCard item={item} cStyle={styles} navigation={navigation}/>}
+                ListHeaderComponent={<PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />}
             />
         </View>
     );
@@ -92,20 +97,25 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         paddingHorizontal: 0,
+        backgroundColor: 'white',
     },
     card: {
-        minWidth: '100%',
+        width: cardWidth,
         borderWidth: 0,
         borderColor: COLORS.gray01,
-        borderRadius: 16,
+        borderRadius: 0,
         paddingBottom: 20,
-        marginBottom: 16,
+        backgroundColor: 'white'
     },
     Image: {
         height: 220,
         borderTopLeftRadius: 0,
         borderTopRightRadius: 0,
     },
+    FlatList: {
+        marginTop: 80,
+        paddingBottom: 100
+    }
 });
 
 export default PostScreen;

@@ -11,7 +11,8 @@ import {
     FlatList,
     StatusBar,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 
 const getPosts = () => {
@@ -21,7 +22,7 @@ const getPosts = () => {
 const DATA = [
     {
         id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-        title: 'First',
+        title: 'Scumbags who do this to their license plates should have their license revoked.......make them re-do the drivers test with all the 16 year olds',
         subreddit: 'r/funny',
         source: 'imgur.com',
         username: 'u/jackson',
@@ -32,7 +33,7 @@ const DATA = [
     },
     {
         id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-        title: 'Second Item',
+        title: 'Where can I buy this new execution?',
         subreddit: 'r/art',
         source: 'gfycat.com',
         username: 'u/robson',
@@ -43,7 +44,7 @@ const DATA = [
     },
     {
         id: '58694a0f-3da1-471f-bd96-145571e29d72',
-        title: 'Third Item',
+        title: 'A wedding pic of two U.S. citizens madly in love... We celebrated our 21st anniversary last week',
         subreddit: 'r/reddevils',
         source: 'reddit.com',
         username: 'u/noahson',
@@ -57,6 +58,7 @@ const DATA = [
 const headerHeight = 80;
 const iconSize = 35;
 const clampHeight = 180;
+const cardWidth = Dimensions.get('screen').width - 20;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -71,16 +73,18 @@ const HomeScreen = ({ navigation }) => {
         inputRange: [0, 60],
         outputRange: [1, 0]
     })
+    const shadowOpacity = 0.07;
     const renderItem = ({ item }) => (
         <TouchableScale
             tension={300}
             friction={20}
             activeScale={.95}
+            style={{ overflow: 'visible' }}
             onPress={() => navigation.navigate('PostScreen', {
                 item: item,
             })}
         >
-            <PostCard item={item} cStyle={styles} navigation={navigation} />
+            <PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />
         </TouchableScale>
     );
     return (
@@ -95,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
                 </View>
             </Animated.View>
             <Animated.View style={[styles.textContainer, { opacity: opacityY }]}>
-                <Text style={styles.headerTopText}>There were about</Text>
+                <Text style={styles.headerTopText}>There have been about</Text>
                 <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
             </Animated.View>
             <AnimatedFlatList
@@ -159,24 +163,24 @@ const styles = StyleSheet.create({
     },
     FlatList: {
         paddingBottom: 30,
-        marginHorizontal: 8,
+        paddingHorizontal: 8,
         paddingTop: 160,
+        overflow: 'visible'
     },
     card: {
-        flex: 1,
-        minWidth: '100%',
-        borderWidth: 1,
+        flexGrow: 1,
+        width: cardWidth,
+        borderWidth: 0,
         borderColor: COLORS.gray01,
-        borderRadius: 16,
+        borderRadius: 10,
         paddingBottom: 20,
-        marginBottom: 16,
         backgroundColor: 'white'
     },
     Image: {
-        height: 180,
+        height: 240,
         width: '100%',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
     },
     textContainer: {
         position: 'absolute',
