@@ -5,6 +5,7 @@ import TouchableScale from 'react-native-touchable-scale';
 import Logo from '../assets/images/logo.svg';
 import MoreButton from '../assets/images/moreButton.svg';
 import Animated, { Extrapolate } from 'react-native-reanimated';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 import {
     View,
     StyleSheet,
@@ -59,6 +60,7 @@ const headerHeight = 80;
 const iconSize = 35;
 const clampHeight = 180;
 const cardWidth = Dimensions.get('screen').width - 28;
+const statusHeight = getStatusBarHeight();
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -133,7 +135,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     header: {
         height: headerHeight,
-        paddingTop: 50,
+        paddingTop: statusHeight,
         paddingBottom: 20,
         paddingHorizontal: 16,
         justifyContent: 'center',
@@ -147,7 +149,8 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 8
+        marginBottom: 8,
+        marginTop: 20
     },
     headerTopText: {
         fontSize: 20,
@@ -168,7 +171,7 @@ const styles = StyleSheet.create({
     FlatList: {
         paddingBottom: 30,
         paddingHorizontal: 8,
-        paddingTop: 160,
+        paddingTop: headerHeight * 2 + 8,
         overflow: 'visible'
     },
     card: {
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         position: 'absolute',
-        top: 80,
+        top: headerHeight + 8,
         width: '100%',
         paddingHorizontal: 16
     }
