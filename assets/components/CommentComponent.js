@@ -7,35 +7,35 @@ import {
 } from 'react-native';
 
 const CommentComponent = ({ item, count }) => {
-    if(item.subComment != null){
+    if (item.subComment != null) {
         return (
             <View style={styles.commentContainer}>
                 <View style={styles.commentInfo}>
                     <Text style={styles.infoText}>{item.username}</Text>
                     <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
                 </View>
-                <Text>
+                <Text style={styles.commentText}>
                     {item.commentText}
                 </Text>
                 <CommentComponent item={item.subComment} count={count + 1}></CommentComponent>
             </View>
         );
     }
-    else if(count >= 5){
-        return(
+    else if (count >= 5) {
+        return (
             <View style={styles.commentContainer}>
                 <Text>see rest of comments</Text>
             </View>
         );
     }
-    else{
-        return(
+    else {
+        return (
             <View style={styles.commentContainer}>
                 <View style={styles.commentInfo}>
                     <Text style={styles.infoText}>{item.username}</Text>
                     <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
                 </View>
-                <Text>
+                <Text style={styles.commentText}>
                     {item.commentText}
                 </Text>
             </View>
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.025)',
         borderRadius: 8,
         marginBottom: 12,
+        overflow: 'hidden'
     },
     commentInfo: {
         flexDirection: "row",
@@ -61,6 +62,9 @@ const styles = StyleSheet.create({
     infoText: {
         fontSize: 12,
         color: COLORS.black50,
+    },
+    commentText: {
+        marginBottom: 12
     }
 });
 
