@@ -1,14 +1,34 @@
 import * as React from 'react';
 import COLORS from '../../global-styles/COLORS';
 import TouchableScale from 'react-native-touchable-scale';
+import useComponentSize from '../../functions/useComponentSize';
 import {
     View,
     StyleSheet,
     Text,
 } from 'react-native';
+import { useTimingTransition } from 'react-native-redash';
+import Animated, { not, interpolate, Easing } from 'react-native-reanimated';
 
 const CommentComponent = ({ item, count }) => {
+    const [commentHeight, setCommentHeight] = React.useState(40);
+    const [size, onLayout] = useComponentSize();
+
+    React.useEffect(() => {
+        setCommentHeight(size.height)
+    }, [])
+
     const [toggle, setToggle] = React.useState(1);
+
+    const transition = useTimingTransition(toggle, {
+        duration: 200,
+        easing: Easing.inOut(Easing.ease)
+    })
+    const height = interpolate(transition, {
+        inputRange: [0, 1],
+        outputRange: [40, commentHeight]
+    });
+
     if (item.subComment != null) {
         return (
             <TouchableScale
@@ -16,25 +36,23 @@ const CommentComponent = ({ item, count }) => {
                 friction={20}
                 activeScale={.95}
                 onPress={() => {
-                    setToggle(toggle === 1 ? 0 : 1)
+                    setToggle(toggle ^ 1)
                     console.log(toggle)
+                    console.log(commentHeight)
                 }}
             >
-                <View style={styles.commentContainer}>
+                <Animated.View style={[styles.commentContainer, { height: height }]} onLayout={onLayout}>
                     <View style={styles.commentInfo}>
                         <Text style={styles.infoText}>{item.username}</Text>
                         <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
                     </View>
-                    {toggle === 1 && (
-                        <View>
-                            <Text style={styles.commentText}>
-                                {item.commentText}
-                            </Text>
-                            <CommentComponent item={item.subComment} count={count + 1}></CommentComponent>
-                        </View>
-                    )}
-
-                </View>
+                    <View>
+                        <Text style={styles.commentText}>
+                            {item.commentText}
+                        </Text>
+                        <CommentComponent item={item.subComment} count={count + 1}></CommentComponent>
+                    </View>
+                </Animated.View>
             </TouchableScale>
         );
     }
