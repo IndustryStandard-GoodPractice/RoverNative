@@ -71,7 +71,9 @@ const PostScreen = ({ route, navigation }) => {
     const ref = React.useRef();
 
     const renderItem = ({ item }) => (
-        <CommentComponent item={item} forwardedRef={ref} />
+        <View style={{ paddingHorizontal: 8 }}>
+            <CommentComponent item={item} forwardedRef={ref} />
+        </View>
     );
     return (
         <Transitioning.View
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     },
     FlatList: {
         marginTop: 80,
-        paddingBottom: 100
+        paddingBottom: 100,
     }
 });
 

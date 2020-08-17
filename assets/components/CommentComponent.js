@@ -63,8 +63,7 @@ const CommentComponent = ({ item, count, forwardedRef }) => {
 const styles = StyleSheet.create({
     commentContainer: {
         flexGrow: 1,
-        marginHorizontal: 8,
-        paddingHorizontal: 16,
+        paddingLeft: 16,
         paddingTop: 12,
         backgroundColor: 'rgba(0, 0, 0, 0.025)',
         borderRadius: 8,
@@ -76,7 +75,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: 'space-between',
         overflow: 'visible',
-        marginBottom: 4
+        marginBottom: 4,
+        paddingRight: 16
     },
     infoText: {
         fontSize: 12,
@@ -84,9 +84,11 @@ const styles = StyleSheet.create({
     },
     commentText: {
         marginBottom: 12,
+        paddingRight: 8
     },
     contentContain: {
-        marginTop: 8
+        marginTop: 8,
+        paddingRight: 8,
     }
 });
 
