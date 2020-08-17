@@ -1,45 +1,29 @@
 import * as React from 'react';
 import COLORS from '../../global-styles/COLORS';
-import useComponentSize from '../../functions/useComponentSize';
+import TouchableScale from 'react-native-touchable-scale';
 import {
     View,
     StyleSheet,
     Text,
 } from 'react-native';
-import { onGestureEvent, mix, withTimingTransition } from 'react-native-redash';
-import Animated, { not, useCode, set, cond, eq, Value, useValue, Easing, interpolate } from 'react-native-reanimated';
-import { TapGestureHandler, State } from 'react-native-gesture-handler';
+import Animated, { Transition, Transitioning } from 'react-native-reanimated';
 
-const CommentComponent = ({ item, count }) => {
-    const [commentHeight, setCommentHeight] = React.useState(40);
-    const [size, onLayout] = useComponentSize();
-
-    React.useEffect(() => {
-        setCommentHeight(size.height + 40)
-        console.log(isOpen)
-    }, [onLayout])
-
-    const isOpen = useValue(1);
-    const transition = React.useRef(withTimingTransition(isOpen, {
-        duration: 250,
-        easing: Easing.inOut(Easing.ease)
-    })).current;
-    const state = useValue(State.UNDETERMINED);
-    const gestureHandler = onGestureEvent({ state });
-    const height = interpolate(transition, {
-        inputRange: [0, 1],
-        outputRange: [0, commentHeight]
-    })
-
-    useCode(() =>
-        cond(eq(state, State.END), set(isOpen, not(isOpen))),
-        [isOpen, state]
-    );
+const CommentComponent = ({ item, count, forwardedRef }) => {
+    let [toggle, setToggle] = React.useState(false);
 
     if (item.subComment != null) {
         return (
-            <TapGestureHandler {...gestureHandler}>
-                <Animated.View style={[styles.commentContainer]}>
+            <TouchableScale
+                tension={300}
+                friction={20}
+                activeScale={.95}
+                onPress={() => {
+                    forwardedRef.current.animateNextTransition();
+                    setToggle(toggle = !toggle);
+                    console.log(toggle)
+                }}
+            >
+                <View style={[styles.commentContainer]}>
                     <View style={styles.commentInfo}>
                         <Text style={styles.infoText}>{item.username}</Text>
                         <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
@@ -47,13 +31,13 @@ const CommentComponent = ({ item, count }) => {
                     <Text style={styles.commentText}>
                         {item.commentText}
                     </Text>
-                    <Animated.View style={[styles.contentContain, { height }]}>
-                        <View onLayout={onLayout}>
-                            <CommentComponent item={item.subComment} count={count + 1}></CommentComponent>
+                    {toggle == true && (
+                        <View style={[styles.contentContain]}>
+                            <CommentComponent item={item.subComment} count={count + 1} forwardedRef={forwardedRef}></CommentComponent>
                         </View>
-                    </Animated.View>
-                </Animated.View>
-            </TapGestureHandler>
+                    )}
+                </View>
+            </TouchableScale>
         );
     }
     else if (count >= 5) {

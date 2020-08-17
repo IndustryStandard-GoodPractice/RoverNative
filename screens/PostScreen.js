@@ -2,7 +2,7 @@ import * as React from 'react';
 import PostCard from '../assets/components/PostCard';
 import CommentComponent from '../assets/components/CommentComponent';
 import COLORS from '../global-styles/COLORS';
-import { Transition, Transitioning } from 'react-native-reanimated';
+import Animated, { Transition, Transitioning } from 'react-native-reanimated';
 import {
     View,
     StyleSheet,
@@ -57,15 +57,28 @@ const commentData = [
 
 const cardWidth = Dimensions.get('screen').width;
 
+const transition = (
+    <Transition.Together>
+        <Transition.In type='fade' durationMs={150} />
+        <Transition.Change />
+        <Transition.Out type='fade' durationMs={150} />
+    </Transition.Together>
+);
+
 const PostScreen = ({ route, navigation }) => {
     const { item } = route.params;
     const shadowOpacity = 0.01;
+    const ref = React.useRef();
 
     const renderItem = ({ item }) => (
-        <CommentComponent item={item} />
+        <CommentComponent item={item} forwardedRef={ref} />
     );
     return (
-        <View style={styles.container}>
+        <Transitioning.View
+            ref={ref}
+            transition={transition}
+            style={styles.container}
+        >
             <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
             <FlatList
                 contentContainerStyle={styles.FlatList}
@@ -76,7 +89,7 @@ const PostScreen = ({ route, navigation }) => {
                 keyExtractor={item => item.id}
                 ListHeaderComponent={<PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />}
             />
-        </View>
+        </Transitioning.View>
     );
 }
 
