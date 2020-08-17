@@ -1,36 +1,53 @@
 import * as React from 'react';
 import COLORS from '../../global-styles/COLORS';
+import TouchableScale from 'react-native-touchable-scale';
 import {
     View,
     StyleSheet,
     Text,
 } from 'react-native';
 
-const CommentComponent = ({ item, count }) => {
-    if (item.subComment != null) {
-        return (
-            <View style={styles.commentContainer}>
-                <View style={styles.commentInfo}>
-                    <Text style={styles.infoText}>{item.username}</Text>
-                    <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
-                </View>
-                <Text style={styles.commentText}>
-                    {item.commentText}
-                </Text>
-                <CommentComponent item={item.subComment} count={count + 1}></CommentComponent>
-            </View>
-        );
-    }
-    else if (count >= 5) {
+const CommentComponent = ({ item, count, forwardedRef }) => {
+    let [toggle, setToggle] = React.useState(false);
+
+    if (count >= 5) {
         return (
             <View style={styles.commentContainer}>
                 <Text>see rest of comments</Text>
             </View>
         );
     }
+    else if (item.subComment != null) {
+        return (
+            <TouchableScale
+                tension={300}
+                friction={20}
+                activeScale={.95}
+                onPress={() => {
+                    forwardedRef.current.animateNextTransition();
+                    setToggle(toggle = !toggle);
+                }}
+            >
+                <View style={[styles.commentContainer]}>
+                    <View style={styles.commentInfo}>
+                        <Text style={styles.infoText}>{item.username}</Text>
+                        <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
+                    </View>
+                    <Text style={styles.commentText}>
+                        {item.commentText}
+                    </Text>
+                    {toggle == false && (
+                        <View style={[styles.contentContain]}>
+                            <CommentComponent item={item.subComment} count={count + 1} forwardedRef={forwardedRef}></CommentComponent>
+                        </View>
+                    )}
+                </View>
+            </TouchableScale>
+        );
+    }
     else {
         return (
-            <View style={styles.commentContainer}>
+            <View style={[styles.commentContainer]}>
                 <View style={styles.commentInfo}>
                     <Text style={styles.infoText}>{item.username}</Text>
                     <Text style={styles.infoText}>{item.karma} ⋅ {item.time}</Text>
@@ -45,26 +62,31 @@ const CommentComponent = ({ item, count }) => {
 
 const styles = StyleSheet.create({
     commentContainer: {
+        flexGrow: 1,
         marginHorizontal: 8,
         paddingHorizontal: 16,
         paddingTop: 12,
-        paddingBottom: 16,
         backgroundColor: 'rgba(0, 0, 0, 0.025)',
         borderRadius: 8,
         marginBottom: 12,
+        justifyContent: 'flex-start',
         overflow: 'hidden'
     },
     commentInfo: {
         flexDirection: "row",
         justifyContent: 'space-between',
-        marginBottom: 8,
+        overflow: 'visible',
+        marginBottom: 4
     },
     infoText: {
         fontSize: 12,
         color: COLORS.black50,
     },
     commentText: {
-        marginBottom: 12
+        marginBottom: 12,
+    },
+    contentContain: {
+        marginTop: 8
     }
 });
 

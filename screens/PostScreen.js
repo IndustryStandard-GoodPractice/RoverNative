@@ -2,7 +2,7 @@ import * as React from 'react';
 import PostCard from '../assets/components/PostCard';
 import CommentComponent from '../assets/components/CommentComponent';
 import COLORS from '../global-styles/COLORS';
-import TouchableScale from 'react-native-touchable-scale';
+import Animated, { Transition, Transitioning } from 'react-native-reanimated';
 import {
     View,
     StyleSheet,
@@ -44,7 +44,7 @@ const commentData = [
         username: 'u/fuckyoudylan',
         time: '35 minutes ago',
         karma: '541 points',
-        commentText: 'Greenwood is the one that can get easy goals. The number of amazing chances he got against cardiff and in preseason are not by luck. He knows exactly where and when to be in the final third.'
+        commentText: 'Most come up as arrogant really..but some are appreciable though..Thiago Silva is one..so highly underrated...no one talks about him in the top 5 CB of the decade..but for me he is immense..we all know what happened to Brazil when he was suspended..also Navas is there..dont know if he will play against Leipzig.. would be ironic for Buffon though if Psg wins..but yeah.. Psg is the last team I would want to win from these 4'
     },
     {
         id: 'bd7acbea-c1b1-46c2-aed5-3asdfasdgad',
@@ -57,24 +57,28 @@ const commentData = [
 
 const cardWidth = Dimensions.get('screen').width;
 
+const transition = (
+    <Transition.Together>
+        <Transition.In type='fade' durationMs={100} />
+        <Transition.Change />
+        <Transition.Out type='fade' durationMs={100} />
+    </Transition.Together>
+);
+
 const PostScreen = ({ route, navigation }) => {
     const { item } = route.params;
     const shadowOpacity = 0.01;
+    const ref = React.useRef();
 
     const renderItem = ({ item }) => (
-        <TouchableScale
-            tension={300}
-            friction={20}
-            activeScale={.95}
-            onPress={() => navigation.navigate('PostScreen', {
-                item: item,
-            })}
-        >
-            <CommentComponent item={item} />
-        </TouchableScale>
+        <CommentComponent item={item} forwardedRef={ref} />
     );
     return (
-        <View style={styles.container}>
+        <Transitioning.View
+            ref={ref}
+            transition={transition}
+            style={styles.container}
+        >
             <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
             <FlatList
                 contentContainerStyle={styles.FlatList}
@@ -85,7 +89,7 @@ const PostScreen = ({ route, navigation }) => {
                 keyExtractor={item => item.id}
                 ListHeaderComponent={<PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />}
             />
-        </View>
+        </Transitioning.View>
     );
 }
 
