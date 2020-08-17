@@ -19,16 +19,16 @@ const CommentComponent = ({ item, count }) => {
         console.log(isOpen)
     }, [onLayout])
 
-    const isOpen = useValue(0);
-    const transition = withTimingTransition(isOpen, {
+    const isOpen = useValue(1);
+    const transition = React.useRef(withTimingTransition(isOpen, {
         duration: 250,
         easing: Easing.inOut(Easing.ease)
-    });
+    })).current;
     const state = useValue(State.UNDETERMINED);
     const gestureHandler = onGestureEvent({ state });
     const height = interpolate(transition, {
         inputRange: [0, 1],
-        outputRange: [0, 400]
+        outputRange: [0, commentHeight]
     })
 
     useCode(() =>
