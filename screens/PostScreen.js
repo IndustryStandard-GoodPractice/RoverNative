@@ -59,9 +59,9 @@ const cardWidth = Dimensions.get('screen').width;
 
 const transition = (
     <Transition.Together>
-        <Transition.In type='fade' durationMs={150} />
+        <Transition.In type='fade' durationMs={100} />
         <Transition.Change />
-        <Transition.Out type='fade' durationMs={150} />
+        <Transition.Out type='fade' durationMs={100} />
     </Transition.Together>
 );
 

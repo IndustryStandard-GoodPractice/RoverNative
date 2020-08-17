@@ -6,12 +6,18 @@ import {
     StyleSheet,
     Text,
 } from 'react-native';
-import Animated, { Transition, Transitioning } from 'react-native-reanimated';
 
 const CommentComponent = ({ item, count, forwardedRef }) => {
     let [toggle, setToggle] = React.useState(false);
 
-    if (item.subComment != null) {
+    if (count >= 5) {
+        return (
+            <View style={styles.commentContainer}>
+                <Text>see rest of comments</Text>
+            </View>
+        );
+    }
+    else if (item.subComment != null) {
         return (
             <TouchableScale
                 tension={300}
@@ -37,13 +43,6 @@ const CommentComponent = ({ item, count, forwardedRef }) => {
                     )}
                 </View>
             </TouchableScale>
-        );
-    }
-    else if (count >= 5) {
-        return (
-            <View style={styles.commentContainer}>
-                <Text>see rest of comments</Text>
-            </View>
         );
     }
     else {
