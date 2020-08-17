@@ -20,7 +20,6 @@ const CommentComponent = ({ item, count, forwardedRef }) => {
                 onPress={() => {
                     forwardedRef.current.animateNextTransition();
                     setToggle(toggle = !toggle);
-                    console.log(toggle)
                 }}
             >
                 <View style={[styles.commentContainer]}>
@@ -31,7 +30,7 @@ const CommentComponent = ({ item, count, forwardedRef }) => {
                     <Text style={styles.commentText}>
                         {item.commentText}
                     </Text>
-                    {toggle == true && (
+                    {toggle == false && (
                         <View style={[styles.contentContain]}>
                             <CommentComponent item={item.subComment} count={count + 1} forwardedRef={forwardedRef}></CommentComponent>
                         </View>
