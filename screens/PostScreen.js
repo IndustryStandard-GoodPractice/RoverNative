@@ -44,7 +44,7 @@ const commentData = [
         username: 'u/fuckyoudylan',
         time: '35 minutes ago',
         karma: '541 points',
-        commentText: 'Greenwood is the one that can get easy goals. The number of amazing chances he got against cardiff and in preseason are not by luck. He knows exactly where and when to be in the final third.'
+        commentText: 'Most come up as arrogant really..but some are appreciable though..Thiago Silva is one..so highly underrated...no one talks about him in the top 5 CB of the decade..but for me he is immense..we all know what happened to Brazil when he was suspended..also Navas is there..dont know if he will play against Leipzig.. would be ironic for Buffon though if Psg wins..but yeah.. Psg is the last team I would want to win from these 4'
     },
     {
         id: 'bd7acbea-c1b1-46c2-aed5-3asdfasdgad',
