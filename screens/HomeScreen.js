@@ -20,8 +20,8 @@ import {
     Dimensions
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { onGestureEvent, diffClamp, clamp } from 'react-native-redash';
-import Animated, { Extrapolate, Value, event, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring } from 'react-native-reanimated';
+import { onGestureEvent, diffClamp, clamp, min } from 'react-native-redash';
+import Animated, { Extrapolate, Value, event, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring, multiply, abs, sub } from 'react-native-reanimated';
 
 const getPosts = () => {
     return DATA;
@@ -72,15 +72,30 @@ const screenHeight = Dimensions.get('screen').height;
 const statusHeight = getStatusBarHeight();
 const bottomNavHeight = 70;
 const bottomNavWidth = cardWidth - 16;
+const snapPoints = [-screenHeight + 250, 0];
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
+export const snapPoint = (
+    points,
+    value,
+    velocity,
+) => {
+    const point = add(value, multiply(0.2, velocity));
+    const diffPoint = (p) => abs(sub(point, p));
+    const deltas = points.map((p) => diffPoint(p));
+    const minDelta = min(...deltas);
+    return points.reduce(
+        (acc, p) => cond(eq(diffPoint(p), minDelta), p, acc),
+        new Value()
+    );
+};
 const withSpring = (
     value,
     gestureState,
-    offset,
     velocity,
-    snapPoint
+    snapPoints,
+    offset
 ) => {
     const clock = new Clock();
     const state = {
@@ -96,7 +111,7 @@ const withSpring = (
         overshootClamping: false,
         restSpeedThreshold: 0.001,
         restDisplacementThreshold: 0.001,
-        toValue: snapPoint
+        toValue: new Value(0)
     }
     const isSpringInterrupted = and(
         eq(gestureState, State.BEGAN),
@@ -112,6 +127,7 @@ const withSpring = (
                 cond(and(not(clockRunning(clock)), not(state.finished)), [
                     set(state.velocity, velocity),
                     set(state.time, 0),
+                    set(config.toValue, snapPoint(snapPoints, value, velocity)),
                     startClock(clock)
                 ]),
                 spring(clock, state, config),
@@ -173,16 +189,20 @@ const HomeScreen = ({ navigation }) => {
     //bottomBar animations
     const state = new Value(State.UNDETERMINED);
     const translationY = new Value(0);
+    const velocityY = new Value(0);
     const offsetY = new Value(0);
     const gestureHandler = onGestureEvent({
         state,
-        translationY
+        translationY,
+        velocityY
     })
-    const translateY = clamp(
-        withSpring(translationY, state, offsetY),
-        -screenHeight + 200,
-        100
-    );
+    const translateY = withSpring(
+        translationY,
+        state,
+        velocityY,
+        snapPoints,
+        offsetY,
+    )
 
     return (
         <View style={styles.container}>
@@ -201,8 +221,8 @@ const HomeScreen = ({ navigation }) => {
             </Animated.View>
 
             <PanGestureHandler {...gestureHandler}>
-                <Animated.View style={[styles.containBottom, { transform: [{ translateY: translateY }] }]}>
-                    <AnimatedBoxShadow setting={shadowOpt} style={{ transform: [{ translateY: bottomNavY }] }}>
+                <Animated.View style={[styles.containBottom, { transform: [{ translateY: bottomNavY }] }]}>
+                    <AnimatedBoxShadow setting={shadowOpt} style={[{ transform: [{ translateY: translateY }] }]}>
                         <View style={styles.bottomNavContainer}>
                             <View style={styles.rowContainer}>
                                 <Expand width={bottomIconSize} height={bottomIconSize} />
