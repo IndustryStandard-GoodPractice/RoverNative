@@ -10,6 +10,7 @@ import Refresh from '../assets/images/refresh.svg';
 import Filter from '../assets/images/filter.svg';
 import Create from '../assets/images/create.svg';
 import { BoxShadow } from 'react-native-shadow';
+import { useMemoOne } from 'use-memo-one';
 import {
     View,
     StyleSheet,
@@ -188,9 +189,13 @@ const HomeScreen = ({ navigation }) => {
 
     //bottomBar animations
     const state = new Value(State.UNDETERMINED);
-    const translationY = new Value(0);
-    const velocityY = new Value(0);
-    const offsetY = new Value(0);
+    const { translationY, velocityY, offsetY } = useMemoOne(
+        () => ({
+            translationY: new Value(0),
+            velocityY: new Value(0),
+            offsetY: new Value(0)
+        })
+    )
     const gestureHandler = onGestureEvent({
         state,
         translationY,
@@ -206,19 +211,6 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
-            <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>
-                <View style={styles.headerRow}>
-                    <Logo width={iconSize} height={iconSize} />
-                    <TouchableOpacity>
-                        <MoreButton width={iconSize} height={iconSize} />
-                    </TouchableOpacity>
-                </View>
-            </Animated.View>
-            <Animated.View style={[styles.textContainer, { opacity: opacityY }, { transform: [{ translateY: textY }] }]}>
-                <Text style={styles.headerTopText}>There have been about</Text>
-                <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
-            </Animated.View>
 
             <PanGestureHandler {...gestureHandler}>
                 <Animated.View style={[styles.containBottom, { transform: [{ translateY: bottomNavY }] }]}>
@@ -240,6 +232,19 @@ const HomeScreen = ({ navigation }) => {
                 </Animated.View>
             </PanGestureHandler>
 
+            <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
+            <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>
+                <View style={styles.headerRow}>
+                    <Logo width={iconSize} height={iconSize} />
+                    <TouchableOpacity>
+                        <MoreButton width={iconSize} height={iconSize} />
+                    </TouchableOpacity>
+                </View>
+            </Animated.View>
+            <Animated.View style={[styles.textContainer, { opacity: opacityY }, { transform: [{ translateY: textY }] }]}>
+                <Text style={styles.headerTopText}>There have been about</Text>
+                <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
+            </Animated.View>
             <AnimatedFlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
@@ -343,7 +348,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     bottomNavText: {
-        fontSize: 18,
+        fontSize: 16,
         color: 'white',
         marginLeft: 8
     },
@@ -367,6 +372,7 @@ const styles = StyleSheet.create({
         right: 30
     },
     containBottom: {
+        flex: 1,
         position: 'absolute',
         bottom: 30,
         zIndex: 99,
