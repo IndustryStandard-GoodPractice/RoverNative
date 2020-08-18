@@ -6,6 +6,11 @@ import Logo from '../assets/images/logo.svg';
 import MoreButton from '../assets/images/moreButton.svg';
 import Animated, { Extrapolate } from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
+import Expand from '../assets/images/expand.svg';
+import Refresh from '../assets/images/refresh.svg';
+import Filter from '../assets/images/filter.svg';
+import Create from '../assets/images/create.svg';
+import { BoxShadow } from 'react-native-shadow';
 import {
     View,
     StyleSheet,
@@ -58,13 +63,32 @@ const DATA = [
 
 const headerHeight = 80;
 const iconSize = 35;
+const bottomIconSize = 26;
 const clampHeight = 180;
 const cardWidth = Dimensions.get('screen').width - 28;
 const statusHeight = getStatusBarHeight();
+const bottomNavHeight = 70;
+const bottomNavWidth = cardWidth - 16;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const HomeScreen = ({ navigation }) => {
+    const shadowOpt = {
+        width: bottomNavWidth,
+        height: bottomNavHeight,
+        color: COLORS.primary01,
+        border: 20,
+        radius: 35,
+        opacity: .25,
+        x: 0,
+        y: 6,
+        style: {
+            position: 'absolute',
+            bottom: 40,
+            zIndex: 99,
+        }
+    }
+
     const scrollY = new Animated.Value(0);
     const diffClampScrollY = Animated.diffClamp(scrollY, 0, clampHeight)
     const headerY = Animated.interpolate(diffClampScrollY, {
@@ -108,6 +132,21 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.headerTopText}>There have been about</Text>
                 <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
             </Animated.View>
+            <BoxShadow setting={shadowOpt}>
+                <View style={styles.bottomNavContainer}>
+                    <View style={styles.rowContainer}>
+                        <Expand width={bottomIconSize} height={bottomIconSize} />
+                        <Text style={styles.bottomNavText}>frontpage</Text>
+                    </View>
+                    <View style={styles.rowContainer}>
+                        <Refresh width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
+                        <Filter width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
+                        <View style={styles.FAB}>
+                            <Create width={bottomIconSize} height={bottomIconSize} />
+                        </View>
+                    </View>
+                </View>
+            </BoxShadow>
             <AnimatedFlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
@@ -195,6 +234,42 @@ const styles = StyleSheet.create({
         top: headerHeight + 8,
         width: '100%',
         paddingHorizontal: 16
+    },
+    bottomNavContainer: {
+        width: bottomNavWidth,
+        backgroundColor: COLORS.primary01,
+        height: bottomNavHeight,
+        justifyContent: 'space-between',
+        borderRadius: 100,
+        paddingHorizontal: 20,
+        flexDirection: 'row'
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    bottomNavText: {
+        fontSize: 18,
+        color: 'white',
+        marginLeft: 8
+    },
+    FAB: {
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 64,
+        height: 64,
+        borderRadius: 100,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.29,
+        shadowRadius: 4.65,
+        elevation: 7,
+        marginBottom: 50,
+        marginRight: 4
     }
 });
 
