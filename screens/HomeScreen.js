@@ -84,16 +84,21 @@ const HomeScreen = ({ navigation }) => {
         y: 6,
         style: {
             position: 'absolute',
-            bottom: 40,
+            bottom: 30,
             zIndex: 99,
         }
     }
+    const AnimatedBoxShadow = Animated.createAnimatedComponent(BoxShadow);
 
     const scrollY = new Animated.Value(0);
     const diffClampScrollY = Animated.diffClamp(scrollY, 0, clampHeight)
     const headerY = Animated.interpolate(diffClampScrollY, {
         inputRange: [0, headerHeight, clampHeight],
         outputRange: [0, 0, -headerHeight],
+    })
+    const bottomNavY = Animated.interpolate(diffClampScrollY, {
+        inputRange: [0, clampHeight],
+        outputRange: [0, bottomNavHeight + 80],
     })
     const opacityY = Animated.interpolate(scrollY, {
         inputRange: [0, 60],
@@ -132,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.headerTopText}>There have been about</Text>
                 <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
             </Animated.View>
-            <BoxShadow setting={shadowOpt}>
+            <AnimatedBoxShadow setting={shadowOpt} style={{ transform: [{ translateY: bottomNavY }] }}>
                 <View style={styles.bottomNavContainer}>
                     <View style={styles.rowContainer}>
                         <Expand width={bottomIconSize} height={bottomIconSize} />
@@ -146,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                     </View>
                 </View>
-            </BoxShadow>
+            </AnimatedBoxShadow>
             <AnimatedFlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
