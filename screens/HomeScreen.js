@@ -4,7 +4,6 @@ import COLORS from '../global-styles/COLORS';
 import TouchableScale from 'react-native-touchable-scale';
 import Logo from '../assets/images/logo.svg';
 import MoreButton from '../assets/images/moreButton.svg';
-import Animated, { Extrapolate } from 'react-native-reanimated';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Expand from '../assets/images/expand.svg';
 import Refresh from '../assets/images/refresh.svg';
@@ -20,6 +19,9 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { onGestureEvent, diffClamp, clamp } from 'react-native-redash';
+import Animated, { Extrapolate, Value, event, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring } from 'react-native-reanimated';
 
 const getPosts = () => {
     return DATA;
@@ -66,13 +68,76 @@ const iconSize = 35;
 const bottomIconSize = 26;
 const clampHeight = 180;
 const cardWidth = Dimensions.get('screen').width - 28;
+const screenHeight = Dimensions.get('screen').height;
 const statusHeight = getStatusBarHeight();
 const bottomNavHeight = 70;
 const bottomNavWidth = cardWidth - 16;
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
+const withSpring = (
+    value,
+    gestureState,
+    offset,
+    velocity,
+    snapPoint
+) => {
+    const clock = new Clock();
+    const state = {
+        finished: new Value(0),
+        velocity: new Value(0),
+        position: new Value(0),
+        time: new Value(0),
+    };
+    const config = {
+        damping: 18,
+        mass: 1,
+        stiffness: 150,
+        overshootClamping: false,
+        restSpeedThreshold: 0.001,
+        restDisplacementThreshold: 0.001,
+        toValue: snapPoint
+    }
+    const isSpringInterrupted = and(
+        eq(gestureState, State.BEGAN),
+        clockRunning(clock)
+    );
+    const finishSpring = [set(offset, state.position), stopClock(clock)];
+
+    return block([
+        cond(isSpringInterrupted, finishSpring),
+        cond(
+            eq(gestureState, State.END),
+            [
+                cond(and(not(clockRunning(clock)), not(state.finished)), [
+                    set(state.velocity, velocity),
+                    set(state.time, 0),
+                    startClock(clock)
+                ]),
+                spring(clock, state, config),
+                cond(state.finished, finishSpring)
+            ],
+            [set(state.finished, 0), set(state.position, add(offset, value))]
+        ),
+        state.position
+    ])
+}
+
 const HomeScreen = ({ navigation }) => {
+    const renderItem = ({ item }) => (
+        <TouchableScale
+            tension={300}
+            friction={20}
+            activeScale={.95}
+            style={{ overflow: 'visible' }}
+            onPress={() => navigation.navigate('PostScreen', {
+                item: item,
+            })}
+        >
+            <PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />
+        </TouchableScale>
+    );
+
     const shadowOpt = {
         width: bottomNavWidth,
         height: bottomNavHeight,
@@ -82,11 +147,6 @@ const HomeScreen = ({ navigation }) => {
         opacity: .25,
         x: 0,
         y: 6,
-        style: {
-            position: 'absolute',
-            bottom: 30,
-            zIndex: 99,
-        }
     }
     const AnimatedBoxShadow = Animated.createAnimatedComponent(BoxShadow);
 
@@ -109,19 +169,21 @@ const HomeScreen = ({ navigation }) => {
         outputRange: [0, -headerHeight + 50]
     })
     const shadowOpacity = 0.07;
-    const renderItem = ({ item }) => (
-        <TouchableScale
-            tension={300}
-            friction={20}
-            activeScale={.95}
-            style={{ overflow: 'visible' }}
-            onPress={() => navigation.navigate('PostScreen', {
-                item: item,
-            })}
-        >
-            <PostCard item={item} cStyle={styles} navigation={navigation} shadowOpacity={shadowOpacity} />
-        </TouchableScale>
+
+    //bottomBar animations
+    const state = new Value(State.UNDETERMINED);
+    const translationY = new Value(0);
+    const offsetY = new Value(0);
+    const gestureHandler = onGestureEvent({
+        state,
+        translationY
+    })
+    const translateY = clamp(
+        withSpring(translationY, state, offsetY),
+        -screenHeight + 200,
+        100
     );
+
     return (
         <View style={styles.container}>
             <StatusBar translucent animated backgroundColor="transparent" barStyle='dark-content' />
@@ -137,21 +199,27 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.headerTopText}>There have been about</Text>
                 <Text style={styles.headerBottomText}>800 posts in the last hour</Text>
             </Animated.View>
-            <AnimatedBoxShadow setting={shadowOpt} style={{ transform: [{ translateY: bottomNavY }] }}>
-                <View style={styles.bottomNavContainer}>
-                    <View style={styles.rowContainer}>
-                        <Expand width={bottomIconSize} height={bottomIconSize} />
-                        <Text style={styles.bottomNavText}>frontpage</Text>
-                    </View>
-                    <View style={styles.rowContainer}>
-                        <Refresh width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
-                        <Filter width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
-                        <View style={styles.FAB}>
-                            <Create width={bottomIconSize} height={bottomIconSize} />
+
+            <PanGestureHandler {...gestureHandler}>
+                <Animated.View style={[styles.containBottom, { transform: [{ translateY: translateY }] }]}>
+                    <AnimatedBoxShadow setting={shadowOpt} style={{ transform: [{ translateY: bottomNavY }] }}>
+                        <View style={styles.bottomNavContainer}>
+                            <View style={styles.rowContainer}>
+                                <Expand width={bottomIconSize} height={bottomIconSize} />
+                                <Text style={styles.bottomNavText}>frontpage</Text>
+                            </View>
+                            <View style={styles.bottomIconContain}>
+                                <Refresh width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
+                                <Filter width={bottomIconSize} height={bottomIconSize} style={{ marginRight: 16 }} />
+                            </View>
+                            <View style={styles.FAB}>
+                                <Create width={bottomIconSize} height={bottomIconSize} />
+                            </View>
                         </View>
-                    </View>
-                </View>
-            </AnimatedBoxShadow>
+                    </AnimatedBoxShadow>
+                </Animated.View>
+            </PanGestureHandler>
+
             <AnimatedFlatList
                 contentContainerStyle={styles.FlatList}
                 decelerationRate={0.998}
@@ -164,6 +232,7 @@ const HomeScreen = ({ navigation }) => {
                         <Animated.ScrollView
                             {...props}
                             scrollEventThrottle={16}
+                            bouncesZoom={false}
                             onScroll={Animated.event(
                                 [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                                 { useNativeDriver: true },
@@ -259,6 +328,7 @@ const styles = StyleSheet.create({
         marginLeft: 8
     },
     FAB: {
+        position: 'absolute',
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
@@ -273,9 +343,19 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.29,
         shadowRadius: 4.65,
         elevation: 7,
-        marginBottom: 50,
-        marginRight: 4
-    }
+        bottom: 30,
+        right: 30
+    },
+    containBottom: {
+        position: 'absolute',
+        bottom: 30,
+        zIndex: 99,
+    },
+    bottomIconContain: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 73
+    },
 });
 
 export default HomeScreen;
