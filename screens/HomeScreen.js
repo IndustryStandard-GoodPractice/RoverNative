@@ -161,7 +161,7 @@ const HomeScreen = ({ navigation }) => {
     })
     const bottomNavY = Animated.interpolate(diffClampScrollY, {
         inputRange: [0, clampHeight],
-        outputRange: [0, bottomNavHeight + 80],
+        outputRange: [30, -bottomNavHeight - 80],
     })
     const opacityY = Animated.interpolate(scrollY, {
         inputRange: [0, 60],
@@ -195,8 +195,8 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
 
             <PanGestureHandler {...gestureHandler}>
-                <Animated.View style={[styles.containBottom, { transform: [{ translateY: bottomNavY }] }]}>
-                    <AnimatedBoxShadow setting={shadowOpt} style={[{ transform: [{ translateY }] }]}>
+                <Animated.View style={[styles.containBottom, { transform: [{ translateY: translateY }], bottom: bottomNavY }]}>
+                    <AnimatedBoxShadow setting={shadowOpt} >
                         <View style={styles.bottomNavContainer}>
                             <View style={styles.rowContainer}>
                                 <Expand width={bottomIconSize} height={bottomIconSize} />
