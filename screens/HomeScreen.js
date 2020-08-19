@@ -10,7 +10,6 @@ import Refresh from '../assets/images/refresh.svg';
 import Filter from '../assets/images/filter.svg';
 import Create from '../assets/images/create.svg';
 import { BoxShadow } from 'react-native-shadow';
-import { useMemoOne } from 'use-memo-one';
 import {
     View,
     StyleSheet,
@@ -20,9 +19,9 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { onGestureEvent, diffClamp, clamp, snapPoint, useValue } from 'react-native-redash';
-import Animated, { Extrapolate, Value, event, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring, multiply, abs, sub } from 'react-native-reanimated';
+import { PanGestureHandler, State, RectButton, BorderlessButton } from 'react-native-gesture-handler';
+import { onGestureEvent, snapPoint, useValue, timing } from 'react-native-redash';
+import Animated, { Value, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring, useCode, debug, neq, Easing } from 'react-native-reanimated';
 
 const getPosts = () => {
     return DATA;
@@ -85,7 +84,7 @@ const withSpring = (
     offset
 ) => {
     const clock = new Clock();
-    const state = {
+    const state: Animated.SpringState = {
         finished: new Value(0),
         velocity: new Value(0),
         position: new Value(0),
@@ -104,10 +103,17 @@ const withSpring = (
         eq(gestureState, State.BEGAN),
         clockRunning(clock)
     );
-    const finishSpring = [set(offset, state.position), stopClock(clock)];
+    const gestureAndAnimationIsOver = useValue(1);
+    const finishSpring = [set(offset, state.position), stopClock(clock), set(gestureAndAnimationIsOver, 1)];
 
     return block([
         cond(isSpringInterrupted, finishSpring),
+        cond(gestureAndAnimationIsOver, set(state.position, offset)),
+        cond(neq(gestureState, State.END), [
+            set(gestureAndAnimationIsOver, 0),
+            set(state.finished, 0),
+            set(state.position, add(offset, value)),
+        ]),
         cond(
             eq(gestureState, State.END),
             [
@@ -175,6 +181,8 @@ const HomeScreen = ({ navigation }) => {
 
     //bottomBar animations
     const state = new Value(State.UNDETERMINED);
+    const clock = new Clock();
+    const expand = useValue(0);
     const translationY = useValue(0);
     const velocityY = useValue(0);
     const offsetY = useValue(0);
@@ -191,6 +199,17 @@ const HomeScreen = ({ navigation }) => {
         offsetY,
     )
 
+    useCode(() => block([
+        cond(eq(expand, 1), [
+            set(offsetY, timing({ clock, to: snapPoints[0], duration: 200, })),
+            cond(not(clockRunning(clock)), set(expand, 0))
+        ]),
+        debug('expand', expand),
+        debug('offsetY', offsetY)
+    ]),
+        [expand, snapPoints, offsetY, clock, translateY]
+    )
+
     return (
         <View style={styles.container}>
 
@@ -199,7 +218,13 @@ const HomeScreen = ({ navigation }) => {
                     <AnimatedBoxShadow setting={shadowOpt} >
                         <View style={styles.bottomNavContainer}>
                             <View style={styles.rowContainer}>
-                                <Expand width={bottomIconSize} height={bottomIconSize} />
+                                <BorderlessButton onPress={() => {
+                                    expand.setValue(1)
+                                }}>
+                                    <View accessible>
+                                        <Expand width={bottomIconSize} height={bottomIconSize} />
+                                    </View>
+                                </BorderlessButton>
                                 <Text style={styles.bottomNavText}>frontpage</Text>
                             </View>
                             <View style={styles.bottomIconContain}>
@@ -248,7 +273,7 @@ const HomeScreen = ({ navigation }) => {
                     );
                 }}
             />
-        </View>
+        </View >
     );
 }
 
