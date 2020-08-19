@@ -21,7 +21,7 @@ import {
     Dimensions
 } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { onGestureEvent, diffClamp, clamp, min } from 'react-native-redash';
+import { onGestureEvent, diffClamp, clamp, snapPoint, useValue } from 'react-native-redash';
 import Animated, { Extrapolate, Value, event, block, cond, eq, set, add, and, Clock, clockRunning, stopClock, not, startClock, spring, multiply, abs, sub } from 'react-native-reanimated';
 
 const getPosts = () => {
@@ -77,20 +77,6 @@ const snapPoints = [-screenHeight + 250, 0];
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
-export const snapPoint = (
-    points,
-    value,
-    velocity,
-) => {
-    const point = add(value, multiply(0.2, velocity));
-    const diffPoint = (p) => abs(sub(point, p));
-    const deltas = points.map((p) => diffPoint(p));
-    const minDelta = min(...deltas);
-    return points.reduce(
-        (acc, p) => cond(eq(diffPoint(p), minDelta), p, acc),
-        new Value()
-    );
-};
 const withSpring = (
     value,
     gestureState,
@@ -128,7 +114,7 @@ const withSpring = (
                 cond(and(not(clockRunning(clock)), not(state.finished)), [
                     set(state.velocity, velocity),
                     set(state.time, 0),
-                    set(config.toValue, snapPoint(snapPoints, value, velocity)),
+                    set(config.toValue, snapPoint(state.position, velocity, snapPoints)),
                     startClock(clock)
                 ]),
                 spring(clock, state, config),
@@ -189,13 +175,9 @@ const HomeScreen = ({ navigation }) => {
 
     //bottomBar animations
     const state = new Value(State.UNDETERMINED);
-    const { translationY, velocityY, offsetY } = useMemoOne(
-        () => ({
-            translationY: new Value(0),
-            velocityY: new Value(0),
-            offsetY: new Value(0)
-        })
-    )
+    const translationY = useValue(0);
+    const velocityY = useValue(0);
+    const offsetY = useValue(0);
     const gestureHandler = onGestureEvent({
         state,
         translationY,
@@ -214,7 +196,7 @@ const HomeScreen = ({ navigation }) => {
 
             <PanGestureHandler {...gestureHandler}>
                 <Animated.View style={[styles.containBottom, { transform: [{ translateY: bottomNavY }] }]}>
-                    <AnimatedBoxShadow setting={shadowOpt} style={[{ transform: [{ translateY: translateY }] }]}>
+                    <AnimatedBoxShadow setting={shadowOpt} style={[{ transform: [{ translateY }] }]}>
                         <View style={styles.bottomNavContainer}>
                             <View style={styles.rowContainer}>
                                 <Expand width={bottomIconSize} height={bottomIconSize} />
